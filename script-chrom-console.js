@@ -1,5 +1,10 @@
 (async function() {
     const { v4: uuidv4 } = await import('https://jspm.dev/uuid');
+
+    const domain = () => {
+        let params = new URLSearchParams(location.hash.split('?')[1]);
+        return params.get('key') || '';
+    }
     // --- 配置与参数 ---
     const API_URL = "https://pro.similarweb.com/widgetApi/WebsiteAnalysisV2/WebsiteAnalysis/Table";
     const DEFAULT_PARAMS = {
@@ -48,6 +53,8 @@
 
     // --- UI 构建 ---
     if (document.getElementById('sw-downloader-panel')) document.getElementById('sw-downloader-panel').remove();
+
+    // 
     
     const panel = document.createElement('div');
     panel.id = 'sw-downloader-panel';
@@ -59,15 +66,15 @@
         <div id="sw-content">
             <div class="sw-field">
                 <label>站点域名 (keys)</label>
-                <input type="text" id="sw-keys" placeholder="buddhastoneshop.com">
+                <input type="text" id="sw-keys" placeholder="buddhastoneshop.com" value="${domain()}">
             </div>
             <div class="sw-field">
                 <label>开始日期 (from)</label>
-                <input type="text" id="sw-from" value="2025|11|01">
+                <input type="text" id="sw-from" value="2025|12|01">
             </div>
             <div class="sw-field">
                 <label>截止日期 (to)</label>
-                <input type="text" id="sw-to" value="2026|01|31">
+                <input type="text" id="sw-to" value="2026|02|28">
             </div>
             <div class="sw-field">
                 <label>开始页码 (page)</label>
@@ -98,9 +105,13 @@
     };
     window.onmouseup = () => isDragging = false;
 
+    const domainInput = document.getElementById('sw-keys');
+    domainInput.ondblclick = () => {
+        domainInput.value = domain();
+    }
     // --- 核心逻辑 ---
     btn.onclick = async () => {
-        const keys = document.getElementById('sw-keys').value.trim();
+        const keys = domainInput.value.trim();
         const from = document.getElementById('sw-from').value.trim();
         const to = document.getElementById('sw-to').value.trim();
         const startPage = parseInt(document.getElementById('sw-page').value);
